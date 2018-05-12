@@ -26,10 +26,10 @@ public class ServerClass implements SharedInterface {
         }
         Registry reg = null;
         try {
-            reg = LocateRegistry.getRegistry(9000);
+            /*reg = LocateRegistry.getRegistry(9000);
             System.err.println("Binding Shared to Registry...");
             reg.bind("Shared", stub);
-        }catch (ConnectException ce){
+        }catch (ConnectException ce){*/
             reg = LocateRegistry.createRegistry(9000);
             System.err.println("Retrying to bind Shared to registry...");
             reg.bind("Shared", stub);
