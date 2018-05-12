@@ -39,6 +39,7 @@ public class ServerClass implements SharedInterface {
             e.printStackTrace();
         }
         System.err.println("Server ready");
+        while(true);
     }
 }
 

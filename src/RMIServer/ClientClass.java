@@ -10,10 +10,12 @@ public class ClientClass {
 
     public static void main(String[] args) {
 
-        String host = (args.length < 1) ? null : args[0];
+        String host = (args.length < 1) ? "192.168.1.110" : args[0];
         try {
-            Registry registry = LocateRegistry.getRegistry(host);
-            SharedInterface stub = (SharedInterface) registry.lookup("Hello");
+            System.err.println("Trying to retrieve registry from host...");
+            Registry registry = LocateRegistry.getRegistry(host, 9000);
+            registry.list();
+            SharedInterface stub = (SharedInterface) registry.lookup("Shared");
             String response = stub.SharedMethod();
             System.out.println("response: " + response);
         } catch (Exception e) {
