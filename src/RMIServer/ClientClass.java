@@ -14,6 +14,7 @@ public class ClientClass {
         try {
             System.err.println("Trying to retrieve registry from host...");
             Registry registry = LocateRegistry.getRegistry(host, 9000);
+            System.err.println("Listing item in registry...");
             registry.list();
             SharedInterface stub = (SharedInterface) registry.lookup("Shared");
             String response = stub.SharedMethod();
