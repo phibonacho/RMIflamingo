@@ -1,8 +1,6 @@
 package RMIServer;
 
-import java.rmi.AccessException;
 import java.rmi.AlreadyBoundException;
-import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -14,23 +12,23 @@ public class ServerClass implements SharedInterface {
     public String SharedMethod(){
         return "I'm a shared method, deal with it..";
     }
+    public int SharedIntMethod() { return 42; }
 
-    public static void main(String args[]) throws RemoteException, AlreadyBoundException {
+    public static void main(String args[]) {
+        System.setProperty("java.security.policy", "/tmp/RMIServer.policy");
+        int port = 3400;
         ServerClass obj = new ServerClass();
         SharedInterface stub = null;
         try {
-            stub = (SharedInterface) UnicastRemoteObject.exportObject(obj, 9000);
+            stub = (SharedInterface) UnicastRemoteObject.exportObject(obj, port);
+            
             // Bind the remote object's stub in the registry
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        Registry reg = null;
         try {
-            /*reg = LocateRegistry.getRegistry(9000);
-            System.err.println("Binding Shared to Registry...");
-            reg.bind("Shared", stub);
-        }catch (ConnectException ce){*/
-            reg = LocateRegistry.createRegistry(9000);
+            LocateRegistry.createRegistry(port);
+            Registry reg = LocateRegistry.getRegistry(port);
             System.err.println("Retrying to bind Shared to registry...");
             reg.bind("Shared", stub);
         } catch (RemoteException e) {
@@ -42,4 +40,3 @@ public class ServerClass implements SharedInterface {
         while(true);
     }
 }
-

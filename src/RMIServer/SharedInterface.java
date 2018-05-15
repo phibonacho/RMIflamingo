@@ -5,4 +5,5 @@ import java.rmi.RemoteException;
 
 public interface SharedInterface extends Remote {
     public String SharedMethod()throws RemoteException;
+    public int SharedIntMethod()throws RemoteException;
 }
