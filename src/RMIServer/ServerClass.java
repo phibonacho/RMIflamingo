@@ -9,33 +9,42 @@ public class ServerClass implements SharedInterface {
     public ServerClass(){
     }
 
+    private void showStackTrace(Exception e){
+        e.printStackTrace();
+    }
+
+    public static Registry setRegistry(int port) throws RemoteException {
+        try {
+            return LocateRegistry.createRegistry(port);
+        } catch (RemoteException e) {
+            return LocateRegistry.getRegistry(port);
+        }
+    }
+
+    public static void ExportNBind(Registry reg, SharedInterface obj, int port) throws AlreadyBoundException, RemoteException {
+        SharedInterface stub = (SharedInterface) UnicastRemoteObject.exportObject(obj, port);
+        reg.bind("Shared", stub);
+    }
+
     public String SharedMethod(){
         return "I'm a shared method, deal with it..";
     }
     public int SharedIntMethod() { return 42; }
 
     public static void main(String args[]) {
-        System.setProperty("java.security.policy", "/tmp/RMIServer.policy");
         int port = 3400;
+        System.setProperty("java.security.policy", "/tmp/RMIServer.policy");
+        if (System.getSecurityManager()==null) System.setSecurityManager(new SecurityManager());
         ServerClass obj = new ServerClass();
-        SharedInterface stub = null;
         try {
-            stub = (SharedInterface) UnicastRemoteObject.exportObject(obj, port);
-            
-            // Bind the remote object's stub in the registry
+            Registry reg=setRegistry(port);
+            ExportNBind(reg, obj, port);
         } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        try {
-            LocateRegistry.createRegistry(port);
-            Registry reg = LocateRegistry.getRegistry(port);
-            System.err.println("Retrying to bind Shared to registry...");
-            reg.bind("Shared", stub);
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            System.err.println("Couldn't set registry, maybe you want to check stack trace?[S/n]");
         } catch (AlreadyBoundException e) {
-            e.printStackTrace();
+            System.err.println("Couldn't export and bind, maybe you want to check stack trace?[S/n]");
         }
+
         System.err.println("Server ready");
         while(true);
     }
