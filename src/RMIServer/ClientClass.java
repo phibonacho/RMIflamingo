@@ -5,19 +5,15 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Scanner;
 
-public class ClientClass extends ServerClass{
+public class ClientClass{
     // client is a server too...
     public ClientClass(){}
 
-    @Override
-    public String SharedMethod() {
-        return "I'm a client remote method darling <3";
-    }
-
-    @Override
-    public int SharedIntMethod() {
-        return 81;
+    static void showStackTrace(Exception e){
+        Scanner sc = new Scanner(System.in);
+        if(sc.nextInt()!='n') e.printStackTrace();
     }
 
     static SharedInterface getRemoteMethod(String host, int port) throws RemoteException, NotBoundException {
@@ -35,9 +31,12 @@ public class ClientClass extends ServerClass{
             // if not specified, returns first method....
             System.out.println("Server methods says: "+sI.SharedMethod());
             System.out.println("Other server method says: "+sI.SharedIntMethod());
-        } catch (Exception e) {
-            System.err.println("Client exception: " + e.toString());
-            e.printStackTrace();
+        } catch (RemoteException e) {
+            System.err.println("Couldn't get registry, maybe you want to check stack trace?[S/n]");
+            showStackTrace(e);
+        } catch (NotBoundException e) {
+            System.err.println("Couldn't lookup for method, maybe you want to check stack trace?[S/n]");
+            showStackTrace(e);
         }
     }
 }
